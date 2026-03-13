@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Just Yuri</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="password-screen" class="screen active">
+        <div class="password-container">
+            <h2>Вход в систему</h2>
+            <div class="input-group-vertical">
+                <input type="text" id="login-input" placeholder="Имя пользователя">
+                <input type="password" id="pass-input" placeholder="Пароль">
+                <button class="ui-control" onclick="checkPassword()">Войти</button>
+            </div>
+            
+            <div id="win-loader" class="loader-hidden">
+                <div class="dot-spinner">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcome-screen" class="screen">
+        <h1 id="welcome-text">Приятно видеть тебя снова, Yuri!</h1>
+    </div>
+
+    <div id="garden-screen" class="screen" onclick="plantFlower(event)">
+        <div id="ui-layer">
+            <div id="hint">Ты мне напоминаешь...</div>
+            <div id="phrase-display"></div>
+        </div>
+    </div>
+
+    <div id="poem-game-screen" class="screen">
+        <div class="notebook-wrapper">
+            <img src="notebook.png" id="notebook-bg" alt="notebook">
+            <div class="notebook-content">
+                <div id="left-page" class="page-side"></div>
+                <div id="right-page" class="page-side"></div>
+            </div>
+        </div>
+
+        <div id="poem-overlay" onclick="closePoemAndFinish()">
+            <div class="poem-paper">
+                <img src="poem.jpg" alt="paper">
+                <div id="poem-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="global-audio-zone" class="ui-control">
+        <button id="universal-skip-btn" onclick="universalSkip()">Пропустить ➔</button>
+        
+        <div class="player-buttons">
+            <button onclick="rewind(-10)">-10с</button>
+            <button id="play-pause-btn" onclick="togglePlay()">▶</button>
+            <button onclick="rewind(10)">+10с</button>
+        </div>
+        
+        <div class="volume-sliders">
+            <div class="slider-group">
+                <label>Музыка</label>
+                <input type="range" id="volume-music" min="0" max="1" step="0.1" value="0.5" oninput="changeVolume('bg-music', this.value)">
+            </div>
+            <div class="slider-group">
+                <label>Эффекты</label>
+                <input type="range" id="volume-sfx" min="0" max="1" step="0.1" value="0.5" oninput="changeSfxVolume(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <div id="final-overlay">
+        <div class="monika-box">
+            <h1>Just Yuri.</h1>
+            <button class="love-btn ui-control" onclick="closeEverything()">Люблю тебя</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-pen" src="pen.wav"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

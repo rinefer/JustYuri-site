@@ -1,0 +1,406 @@
+:root {
+    --milk: #FFFDF5;
+    --cream: #F5E6CA;
+    --soft-pink: #EAC7C7;
+    --text-color: #5D534A;
+    --ddlc-pink: #BB5588;
+    --danger: #e07a5f;
+}
+
+body, html {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--milk);
+    color: var(--text-color);
+    overflow: hidden;
+    touch-action: none;
+}
+
+.screen {
+    display: none; width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+}
+
+.screen.active { 
+    display: flex; flex-direction: column; 
+    justify-content: center; align-items: center; 
+}
+
+/* --- КОНТЕЙНЕР ПАРОЛЯ --- */
+.password-container { 
+    text-align: center; width: 90%; max-width: 320px; 
+    background: white; padding: 30px; border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    z-index: 10;
+}
+
+.input-group { display: flex; gap: 10px; margin-top: 20px; }
+
+input {
+    padding: 12px; border: 2px solid var(--cream);
+    border-radius: 8px; outline: none; flex-grow: 1;
+}
+
+button {
+    padding: 10px 20px; background: var(--soft-pink);
+    border: none; border-radius: 8px; cursor: pointer; color: white;
+    transition: 0.3s;
+}
+
+button:hover { background: var(--ddlc-pink); }
+
+/* --- ИНТЕРФЕЙС САДА --- */
+#ui-layer { 
+    position: fixed; top: 40px; width: 100%; 
+    text-align: center; pointer-events: none; z-index: 50; 
+}
+
+#phrase-display { 
+    font-size: 2rem; font-weight: bold; color: var(--ddlc-pink); 
+    min-height: 3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.flower {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 120px; height: 120px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; z-index: 5;
+}
+
+.flower svg { position: absolute; width: 100%; height: 100%; overflow: visible; }
+
+.petal { 
+    stroke: rgba(0,0,0,0.05); stroke-width: 1px;
+    transform-origin: center; scale: 0;
+    animation: grow 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+}
+
+.center { scale: 0; animation: grow 0.5s 0.4s forwards; }
+
+.word-label {
+    position: relative; font-size: 0.85rem; font-weight: bold;
+    background: rgba(255, 255, 255, 0.8); padding: 2px 10px; border-radius: 12px;
+    backdrop-filter: blur(2px); opacity: 0; animation: fadeIn 0.5s 0.8s forwards;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    pointer-events: none;
+}
+
+/* Анимации покачивания */
+.sway-1 { animation: sway1 4s ease-in-out infinite; }
+.sway-2 { animation: sway2 5s ease-in-out infinite; }
+.sway-3 { animation: sway3 6s ease-in-out infinite; }
+
+@keyframes sway1 { 0%, 100% { transform: translate(-50%, -50%) rotate(-2deg); } 50% { transform: translate(-50%, -52%) rotate(2deg); } }
+@keyframes sway2 { 0%, 100% { transform: translate(-50%, -50%) rotate(3deg); } 50% { transform: translate(-52%, -50%) rotate(-3deg); } }
+@keyframes sway3 { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 50% { transform: translate(-48%, -51%) rotate(1deg); } }
+
+@keyframes grow { to { scale: 1; } }
+@keyframes fadeIn { to { opacity: 1; } }
+
+#skip-btn {
+    position: fixed; bottom: 80px; right: 20px;
+    background: rgba(255, 255, 255, 0.5); color: var(--text-color);
+    border: 1px solid var(--soft-pink); border-radius: 20px;
+    padding: 8px 15px; font-size: 0.8rem; z-index: 100;
+}
+
+#audio-player { 
+    position: fixed; bottom: 20px; right: 20px; 
+    background: rgba(255,255,255,0.4); padding: 10px; 
+    border-radius: 30px; backdrop-filter: blur(5px); z-index: 100; 
+}
+
+#audio-player button { 
+    padding: 5px 10px; background: transparent; 
+    color: var(--text-color); border: 1px solid var(--soft-pink); 
+    border-radius: 15px; margin: 0 2px;
+}
+
+#toast { 
+    position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); 
+    background: var(--ddlc-pink); color: white; padding: 10px 25px; 
+    border-radius: 30px; opacity: 0; transition: 0.5s; z-index: 2000;
+    font-weight: bold; pointer-events: none;
+}
+
+/* --- ФИНАЛ --- */
+#final-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: white; z-index: 1000; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 2s;
+}
+
+.monika-box { border: 4px solid var(--ddlc-pink); padding: 50px; text-align: center; }
+
+.screen-off { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: black; z-index: 9999; animation: shutdown 1.2s forwards; 
+}
+
+@keyframes shutdown { 
+    0% { transform: scaleY(1); } 
+    40% { transform: scaleY(0.005) scaleX(1); } 
+    100% { transform: scaleY(0) scaleX(0); } 
+}
+
+/* --- БЛОКНОТ (МИНИ-ИГРА) --- */
+.notebook-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #222;
+}
+
+#notebook-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    position: absolute;
+}
+
+.notebook-content {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    width: 70%; 
+    height: 75%;
+    top: 26%; 
+    left: 2%;
+    pointer-events: none;
+    /* Прижимаем обе страницы к верху, чтобы левая не зависела от правой */
+    align-items: flex-start; 
+}
+
+.page-side {
+    flex: 1;
+    display: grid;
+    align-content: start; /* Контент всегда начинается сверху */
+    padding: 20px;
+    pointer-events: auto;
+}
+
+/* Левая страница (Записанные слова) */
+#left-page {
+    grid-template-columns: repeat(3, 1fr); /* 3 слова в ряд */
+    row-gap: 2.3vh; /* Подстройка под синие линии */
+    column-gap: 15px;
+    padding-left: 40px; /* Отступ от переплета */
+}
+
+/* Правая страница (Выбор слов) */
+#right-page {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 3.5vh; /* Увеличенное расстояние между словами */
+    column-gap: 30px;
+    justify-items: center;
+}
+
+/* Шрифты в стиле DDLC */
+.poem-word, .written-word, #poem-text {
+    font-family: "Georgia", "Journal", "Times New Roman", serif;
+    user-select: none;
+}
+
+.poem-word {
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #000000;
+    font-weight: bold;
+    padding: 2px 5px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+}
+
+.poem-word:hover {
+    transform: scale(1.1) translateY(-5px);
+    color: var(--ddlc-pink);
+}
+
+.written-word {
+    font-size: 1.2rem;
+    color: #222;
+    font-style: italic;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* --- ТЕКСТ ПОЭМЫ (ЛИСТОК) --- */
+#poem-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); 
+    z-index: 500;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.poem-paper {
+    position: relative;
+    width: 90%;
+    max-width: 650px;
+    animation: slideUp 1s ease-out forwards;
+    cursor: pointer;
+}
+
+#poem-text {
+    position: absolute;
+    top: 10%; /* Текст в верхней части листа */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    text-align: center;
+    white-space: pre-line;
+}
+
+/* Новые стили для входа */
+.input-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+#win-loader {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    transition: opacity 0.3s;
+}
+
+.loader-hidden { opacity: 0; visibility: hidden; }
+
+/* Анимация точек Windows */
+.dot-spinner {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--ddlc-pink);
+    border-radius: 50%;
+    animation: rotateDots 3s infinite cubic-bezier(0.3, 0, 0.7, 1);
+    opacity: 0;
+}
+
+.dot:nth-child(1) { animation-delay: 0.1s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+.dot:nth-child(4) { animation-delay: 0.4s; }
+.dot:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes rotateDots {
+    0% { transform: rotate(0deg) translateY(-15px); opacity: 1; }
+    80% { transform: rotate(360deg) translateY(-15px); opacity: 1; }
+    100% { transform: rotate(360deg) translateY(-15px); opacity: 0; }
+}
+
+/* Приветствие */
+#welcome-screen {
+    background-color: white;
+    z-index: 100;
+}
+
+#welcome-text {
+    font-size: 2.5rem;
+    color: var(--ddlc-pink);
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+#volume-control {
+    width: 80px;
+    margin-left: 10px;
+    cursor: pointer;
+    accent-color: var(--ddlc-pink);
+    vertical-align: middle;
+}
+
+#global-audio-zone {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: none; /* Появится через JS */
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Показываем плеер только на активных игровых экранах */
+body:has(#garden-screen.active) #global-audio-zone,
+body:has(#poem-game-screen.active) #global-audio-zone {
+    display: flex;
+}
+
+.volume-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.7rem;
+    color: var(--ddlc-pink);
+    font-weight: bold;
+}
+
+.slider-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#global-audio-zone input[type="range"] {
+    width: 80px;
+    accent-color: var(--ddlc-pink);
+    cursor: pointer;
+}
+
+.player-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+#universal-skip-btn {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--soft-pink);
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text-color);
+    margin-bottom: 5px;
+    transition: 0.3s;
+}
+
+#universal-skip-btn:hover {
+    background: var(--soft-pink);
+    color: white;
+}
+
+.fade-in { opacity: 1 !important; }
+.fade-out { opacity: 0 !important; transition: opacity 1s !important; }
+
+.ui-control { pointer-events: auto; }
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
